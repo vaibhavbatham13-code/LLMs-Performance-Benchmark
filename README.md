@@ -30,6 +30,3 @@ Pricing and specs are pulled from each vendor's own API/model documentation (Ope
 
 Single self-contained `index.html` — vanilla HTML/CSS/JS, no framework, no build step, no dependencies. Fonts loaded from Google Fonts (Fraunces + IBM Plex Mono).
 
-## Run it locally
-
-Just open `index.html` in a browser, or serve the folder with any static file server.
