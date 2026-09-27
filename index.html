@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field notes: Frontier LLMs compared</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="mark">field<span>/</span>notes</div>
+    <div class="mark-sub">Frontier LLMs, indexed</div>
+    <div style="border:1.5px solid var(--gold); color:var(--gold); font-size:10px; padding:6px 10px; margin-bottom:24px; display:inline-block; transform:rotate(-1.5deg); letter-spacing:0.03em;">DATA SNAPSHOT<br><span style="color:var(--ink); font-family:'Fraunces',serif; font-size:12px; font-weight:600;">Sep 27, 2026</span></div>
+
+    <div class="facet">
+      <div class="facet-title">search</div>
+      <input id="search" type="text" placeholder="filter by name or feature…">
+    </div>
+
+    <div class="facet">
+      <div class="facet-title">developer</div>
+      <div id="dev-facets"></div>
+    </div>
+
+    <button class="reset-link" onclick="resetFilters()">clear all filters</button>
+
+    <div class="fx-note">Prices shown in <b>₹ (INR)</b> at ~₹95.6/$1, with the USD API rate underneath — every provider here still bills in USD, so the dollar figure is the one that actually matters for budgeting.</div>
+  </aside>
+
+  <main class="main">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">data snapshot: September 27, 2026 — benchmarks & pricing move fast, verify before relying on this</div>
+        <h1>Which LLM is actually worth your money?</h1>
+        <p class="dek">Five current models from OpenAI, Anthropic, and Google — specs, pricing, and benchmark scores side by side, plus a quick matcher that factors in who you are, your budget, and what you actually need the model for.</p>
+      </div>
+      <div class="glance">
+        <div class="glance-title">at a glance · data as of Sep 27, 2026</div>
+        <div class="glance-row"><span class="g-label">models indexed</span><span class="g-val" id="g-total"></span></div>
+        <div class="glance-row"><span class="g-label">cheapest output / 1M</span><span class="g-val" id="g-cheap"></span></div>
+        <div class="glance-row"><span class="g-label">largest context window</span><span class="g-val" id="g-ctx"></span></div>
+        <div class="glance-row"><span class="g-label">top Intelligence Index</span><span class="g-val" id="g-intel"></span></div>
+      </div>
+    </header>
+
+    <section class="rec-section" id="rec-section">
+      <h2 class="section-title">Find your match</h2>
+      <p class="section-sub">Answer three quick questions — we'll weigh the real numbers below against what you told us and show our reasoning, not just a name.</p>
+
+      <div class="rec-group" data-key="role">
+        <div class="rec-label">1. What best describes you right now?</div>
+        <div class="rec-options">
+          <button class="rec-btn" data-value="student">Student</button>
+          <button class="rec-btn" data-value="developer">Developer / working professional</button>
+          <button class="rec-btn" data-value="founder">Founder / small team</button>
+          <button class="rec-btn" data-value="researcher">Researcher / academic</button>
+        </div>
+      </div>
+
+      <div class="rec-group" data-key="focus">
+        <div class="rec-label">2. What will you mostly use it for?</div>
+        <div class="rec-options">
+          <button class="rec-btn" data-value="coding">Coding & software engineering</button>
+          <button class="rec-btn" data-value="math">Maths & deep research</button>
+          <button class="rec-btn" data-value="writing">Writing & everyday knowledge work</button>
+          <button class="rec-btn" data-value="everyday">Quick everyday tasks & chat</button>
+        </div>
+      </div>
+
+      <div class="rec-group" data-key="budget">
+        <div class="rec-label">3. How tight is your budget?</div>
+        <div class="rec-options">
+          <button class="rec-btn" data-value="tight">Very tight — every rupee counts</button>
+          <button class="rec-btn" data-value="moderate">Moderate — cost-conscious</button>
+          <button class="rec-btn" data-value="flexible">Flexible — best tool for the job</button>
+          <button class="rec-btn" data-value="none">Not a concern — I need the best</button>
+        </div>
+      </div>
+
+      <button class="rec-submit" id="rec-submit" disabled onclick="runRecommender()">Find my match →</button>
+
+      <div class="rec-result" id="rec-result"></div>
+    </section>
+
+    <section class="grid" id="grid"></section>
+
+    <section class="chart-section">
+      <h2 class="section-title">The numbers, visually</h2>
+      <p class="section-sub">Same data as the table below, drawn out so the gaps are easier to see at a glance. Hatched bars mean the figure wasn't independently published at data-collection time — not zero.</p>
+      <div class="charts-wrap" id="charts-wrap"></div>
+    </section>
+
+    <section class="compare-panel" id="compare-panel">
+      <h2 class="section-title">Side by side</h2>
+      <p class="section-sub" id="compare-sub"></p>
+      <div class="compare-layout">
+        <div>
+          <svg id="radar-svg" viewBox="0 0 260 260" width="100%" height="260"></svg>
+          <div class="radar-legend" id="radar-legend"></div>
+        </div>
+        <div class="compare-scroll"><div class="compare-grid" id="compare-grid"></div></div>
+      </div>
+    </section>
+
+    <section class="table-wrap">
+      <h2 class="section-title">Full spec sheet</h2>
+      <p class="section-sub">Click a column heading to sort.</p>
+      <table>
+        <thead>
+          <tr>
+            <th data-key="name">Model<span class="arrow"></span></th>
+            <th data-key="developer">Developer<span class="arrow"></span></th>
+            <th data-key="release">Release date<span class="arrow"></span></th>
+            <th data-key="modelId">API model ID<span class="arrow"></span></th>
+            <th data-key="context">Context window<span class="arrow"></span></th>
+            <th data-key="maxOutput">Max output<span class="arrow"></span></th>
+            <th data-key="inputCost">Input / 1M<span class="arrow"></span></th>
+            <th data-key="outputCost">Output / 1M<span class="arrow"></span></th>
+            <th data-key="speed">Peak output speed<span class="arrow"></span></th>
+            <th data-key="intelligence">Intelligence Index (max)<span class="arrow"></span></th>
+            <th data-key="arcagi">ARC-AGI-3<span class="arrow"></span></th>
+            <th data-key="terminalbench">Terminal-Bench 4.0<span class="arrow"></span></th>
+            <th data-key="modality">Modality</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
+
+    <footer class="note">
+      <b>How to read this page.</b> Figures are pulled from each vendor's own model documentation and pricing pages, cross-checked against Artificial Analysis and ARC Prize where available, as of late September 2026.
+      <ul>
+        <li><b>ARC-AGI-3 is two different numbers for GPT-6 Astra</b> depending on test harness — 62.7% on ARC Prize's Standard harness vs 99.9% on a newer "Provider Adapter" harness that preserves opaque reasoning between calls. These are not a range; they're different tests.</li>
+        <li><b>Claude Opus 5.5 has no verified ARC-AGI-3 score yet</b> — Anthropic's test requests were flagged by ARC Prize's anti-abuse system at launch and the retest hadn't landed as of this page's data.</li>
+        <li><b>GPT-6 Sol is five days old</b> as of this writing and several independent benchmarks (Terminal-Bench 4.0, ARC-AGI-3, output speed) simply hadn't been run yet — those cells say so rather than guessing.</li>
+        <li>The <b>Intelligence Index</b> column is Artificial Analysis' composite score at each model's maximum reasoning effort; Gemini 3.8 Flash isn't on that index; its LLM Stats composite score (a different, non-comparable methodology) is noted instead.</li>
+        <li>₹ figures are USD converted at ~₹95.6/$1 for reference only — every model here is billed in USD by its provider.</li>
+      </ul>
+      This page is a snapshot, not a live feed — recheck each provider's pricing page before making a purchasing decision, especially anything usage-based.
+    </footer>
+  </main>
+</div>
+
+<div class="tray" id="tray">
+  <div class="chips" id="tray-chips"></div>
+  <button class="clear" onclick="clearPicks()">Clear</button>
+  <button class="go" onclick="scrollToCompare()">View side by side ↓</button>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
