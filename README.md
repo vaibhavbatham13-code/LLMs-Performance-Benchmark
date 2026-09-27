@@ -26,7 +26,4 @@ A few benchmark figures on this page are genuinely contested or incomplete as of
 
 Pricing and specs are pulled from each vendor's own API/model documentation (OpenAI, Anthropic, Google), cross-checked against [Artificial Analysis](https://artificialanalysis.ai) and [ARC Prize](https://arcprize.org) where available.
 
-## Tech
-
-Single self-contained `index.html` — vanilla HTML/CSS/JS, no framework, no build step, no dependencies. Fonts loaded from Google Fonts (Fraunces + IBM Plex Mono).
 
